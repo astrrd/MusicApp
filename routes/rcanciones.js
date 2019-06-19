@@ -1,4 +1,4 @@
-module.exports = function(app, swig) {
+module.exports = function(app, swig, gestorBD) {
 
     app.get('/canciones/agregar', function (req, res) {
         var respuesta = swig.renderFile('views/bagregar.html', {
@@ -14,7 +14,7 @@ module.exports = function(app, swig) {
 
     app.get('/canciones/:id', function(req, res) {
         var respuesta = 'id: ' + req.params.id;
-        res.send(respuesta); 
+        res.send(respuesta);
     })
 
     app.get('/canciones/:genero/:id', function(req, res) {
@@ -24,9 +24,29 @@ module.exports = function(app, swig) {
         res.send(respuesta);
     })
     app.post("/cancion", function(req, res) {
-        res.send("Canción agregada:"+req.body.nombre  +"<br>"
-            +" genero :" +req.body.genero +"<br>"
-            +" precio: "+req.body.precio);
+        var cancion = {
+            nombre : req.body.nombre,
+            genero : req.body.genero,
+            precio : req.body.precio
+        }
+        // Conectarse
+        gestorBD.insertarCancion(cancion, function(id){
+            if (id == null) {
+                res.send("Error al insertar ");
+            } else {
+                if (req.files.portada != null) {
+                    var imagen = req.files.portada;
+                    imagen.mv('public/portadas/' + id + '.png', function(err) {
+                        if (err) {
+                            res.send("Error al subir la portada");
+                        } else {
+                            res.send("Agregada id:  " + id);
+                        }
+                    });
+                }
+
+            }
+        });
 
     });
     app.get("/canciones", function(req, res) {
