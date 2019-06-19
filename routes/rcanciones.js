@@ -14,7 +14,7 @@ module.exports = function(app, swig) {
 
     app.get('/canciones/:id', function(req, res) {
         var respuesta = 'id: ' + req.params.id;
-        res.send(respuesta);
+        res.send(respuesta); 
     })
 
     app.get('/canciones/:genero/:id', function(req, res) {
